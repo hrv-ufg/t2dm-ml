@@ -1,5 +1,3 @@
-# t2dm-ml
-
 # Multimodal Machine Learning for Type 2 Diabetes Mellitus Detection
 
 This repository contains the source code used in the study:
