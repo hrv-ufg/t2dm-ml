@@ -1,14 +1,16 @@
 # preprocessing
 
-Pré-processamento de dados de RRi para cálculo da HRV.
+Preprocessing of RRi data for HRV calculation.
 
-Para executar o código, inicie instalando as dependências necessárias:
+To run the code, first install the required dependencies:
 
-    pip install -r requirements.txt
+```bash
+pip install -r requirements.txt
+```
 
-Em seguida, garanta que os dados estejam organizados na seguinte estrutura ou altere os caminhos no arquivo `src/config.py`:
+Then, ensure that the data are organized according to the following structure, or modify the paths in the `src/config.py` file:
 
-```plaintext
+```text
 vfc-diabeticos/
 ├── data/
 │   ├── control/
@@ -20,42 +22,44 @@ vfc-diabeticos/
 └── requirements.txt
 ```
 
+## Methodology
 
-**A metodologia adotada pode ser resumida em 4 etapas:**
+The adopted methodology can be summarized in four steps:
 
-1. Descarte das 10 primeiras entradas de RRi de cada arquivo (paciente);
+1. **Discard the first 10 RRi entries** from each file (patient).
 
-2. Avaliação da estabilidade dos sinais de RRi e descarte dos arquivos que não atenderem
-   o limiar estabelecido (90%). A estabilidade do sinal é calculada a partir da:
-    - Detecção de Outliers (RRi < 300 ou RRi > 2000);
-    - Detecção de Batimentos Ectópicos (RRi+1/RRi não pode variar mais que 20%, para mais ou para menos);
+2. **Assess the stability of the RRi signals** and discard files that do not meet the established threshold (90%). Signal stability is assessed based on:
 
-3. Transformação dos sinais de RRi em NNi (com 3 casas decimais):
-    - Substituindo os Outliers por meio da interpolação linear;
-    - Substituindo os Batimentos Ectópicos por meio da interpolação linear;
-    
-4. Truncamento dos arquivos de NNi, mantendo a parte inicial, em função de
-   um determinado valor de tempo (não em quantidade de NNi). Se não informado
-   o tempo mínimo desejado, considera-se o arquivo com menor duração como referência.
+   * **Outlier detection:** RRi < 300 or RRi > 2000;
+   * **Ectopic beat detection:** RRi+1/RRi must not vary by more than 20%, either upward or downward.
 
+3. **Transform the RRi signals into NNi** (with 3 decimal places):
 
-**Ao final, os resultados serão salvos no diretório `data/output/`, considerando 2 subdiretórios:**
+   * Replace outliers using linear interpolation;
+   * Replace ectopic beats using linear interpolation.
 
-- `denoised/`: com os NNi completos
-- `truncated/`: com os NNi truncados
-    
-- Além disso, serão salvos relatórios com informações estatísticas básicas sobre os dados
-  iniciais e sobre os resultados, considerando o diretório `truncated/`, conforme exemplo abaixo:
-    
-        ---------- GRUPO: X ----------
-        Diretório: ../data/output/truncated/X
-        Número de Arquivos: X
-        Maior Duração (min): X
-        Arquivo com Maior Duração: filename_trunc_X_min.txt
-        Menor Duração (min): X
-        Arquivo com Menor Duração: filename_trunc_X_min.txt
-        Duração Média (min): X
-        Limite de Qualidade (%): 90.0
-        Qualidade Média (%): X
-        Arquivos Abaixo do Limite: 0
-        Arquivos Acima do Limite: 167
+4. **Truncate the NNi files**, retaining the initial portion based on a specified time value rather than the number of NNi. If the desired minimum duration is not specified, the file with the shortest duration is used as the reference.
+
+## Output
+
+The results are saved in the `data/output/` directory, with two subdirectories:
+
+* `denoised/`: contains the complete NNi sequences;
+* `truncated/`: contains the truncated NNi sequences.
+
+Additionally, reports containing basic statistical information about the initial data and the results are saved based on the `truncated/` directory, as shown in the example below:
+
+```text
+---------- GROUP: X ----------
+Directory: ../data/output/truncated/X
+Number of Files: X
+Longest Duration (min): X
+File with Longest Duration: filename_trunc_X_min.txt
+Shortest Duration (min): X
+File with Shortest Duration: filename_trunc_X_min.txt
+Average Duration (min): X
+Quality Threshold (%): 90.0
+Average Quality (%): X
+Files Below Threshold: 0
+Files Above Threshold: 167
+```
